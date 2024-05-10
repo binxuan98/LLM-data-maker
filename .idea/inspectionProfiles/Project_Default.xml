@@ -1,0 +1,64 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="41">
+            <item index="0" class="java.lang.String" itemvalue="wandb" />
+            <item index="1" class="java.lang.String" itemvalue="visdom" />
+            <item index="2" class="java.lang.String" itemvalue="pytorch-ranger" />
+            <item index="3" class="java.lang.String" itemvalue="protobuf" />
+            <item index="4" class="java.lang.String" itemvalue="pyDeprecate" />
+            <item index="5" class="java.lang.String" itemvalue="torchmetrics" />
+            <item index="6" class="java.lang.String" itemvalue="Pillow-SIMD" />
+            <item index="7" class="java.lang.String" itemvalue="smmap" />
+            <item index="8" class="java.lang.String" itemvalue="pytimeparse" />
+            <item index="9" class="java.lang.String" itemvalue="PyYAML" />
+            <item index="10" class="java.lang.String" itemvalue="repackage" />
+            <item index="11" class="java.lang.String" itemvalue="promise" />
+            <item index="12" class="java.lang.String" itemvalue="py-cpuinfo" />
+            <item index="13" class="java.lang.String" itemvalue="numpy" />
+            <item index="14" class="java.lang.String" itemvalue="gitdb" />
+            <item index="15" class="java.lang.String" itemvalue="torchvision" />
+            <item index="16" class="java.lang.String" itemvalue="fsspec" />
+            <item index="17" class="java.lang.String" itemvalue="mosaicml" />
+            <item index="18" class="java.lang.String" itemvalue="sentry-sdk" />
+            <item index="19" class="java.lang.String" itemvalue="ruamel.yaml.clib" />
+            <item index="20" class="java.lang.String" itemvalue="shortuuid" />
+            <item index="21" class="java.lang.String" itemvalue="urllib3" />
+            <item index="22" class="java.lang.String" itemvalue="pyarrow" />
+            <item index="23" class="java.lang.String" itemvalue="GitPython" />
+            <item index="24" class="java.lang.String" itemvalue="portalocker" />
+            <item index="25" class="java.lang.String" itemvalue="coolname" />
+            <item index="26" class="java.lang.String" itemvalue="typer" />
+            <item index="27" class="java.lang.String" itemvalue="torchdata" />
+            <item index="28" class="java.lang.String" itemvalue="ruamel.yaml" />
+            <item index="29" class="java.lang.String" itemvalue="yahp" />
+            <item index="30" class="java.lang.String" itemvalue="torch" />
+            <item index="31" class="java.lang.String" itemvalue="click" />
+            <item index="32" class="java.lang.String" itemvalue="attrs" />
+            <item index="33" class="java.lang.String" itemvalue="docker-pycreds" />
+            <item index="34" class="java.lang.String" itemvalue="torch-optimizer" />
+            <item index="35" class="java.lang.String" itemvalue="tqdm" />
+            <item index="36" class="java.lang.String" itemvalue="pathtools" />
+            <item index="37" class="java.lang.String" itemvalue="docstring-parser" />
+            <item index="38" class="java.lang.String" itemvalue="einops" />
+            <item index="39" class="java.lang.String" itemvalue="setproctitle" />
+            <item index="40" class="java.lang.String" itemvalue="blobfile" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="regression.inline" />
+          <option value="list.*" />
+          <option value="object.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
