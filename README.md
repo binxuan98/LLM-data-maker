@@ -18,6 +18,11 @@
 - 重复以上步骤，直到收集到足够的问答数据
 
 ## 3. 项目部署
+### 直接下载应用 
+```
+点击[阿里网盘]()下载应用
+```
+### 本地部署
 ```bash
 git clone https://github.com/binxuan98/LLM-data-maker.git
 cd LLM-data-maker

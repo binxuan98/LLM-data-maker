@@ -1,5 +1,5 @@
 import tkinter as tk
-from menu import GUIWithMenu
+from MENU.menu import GUIWithMenu
 
 
 def main():

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import webbrowser
-from gui import GUI
+from GUI.gui import GUI
 
 
 class GUIWithMenu(GUI):

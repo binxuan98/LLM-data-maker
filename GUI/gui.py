@@ -2,8 +2,8 @@ from tkinter import filedialog
 from tkinter import messagebox
 from threading import Thread
 from datetime import datetime
-import json_extractor
-from document_processor import DocumentProcessor
+from doc import json_extractor
+from doc.document_processor import DocumentProcessor
 import json
 import gui_setup
 import tkinter as tk
