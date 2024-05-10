@@ -2,3 +2,4 @@ tkinter
 threading
 datetime
 webbrowser
+pyautogui
