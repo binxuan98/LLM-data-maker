@@ -3,3 +3,4 @@ threading
 datetime
 webbrowser
 pyautogui
+requests

@@ -23,11 +23,11 @@
 
 
 ## 3. 项目部署
-### 直接下载应用 
-```
-点击[阿里网盘]()下载应用
-```
-### 本地部署
+### 3.1 直接下载应用 
+
+点击[发布页](https://github.com/binxuan98/LLM-data-maker/releases/tag/LLM-data-maker)下载应用
+
+### 3.2 本地部署
 ```bash
 git clone https://github.com/binxuan98/LLM-data-maker.git
 cd LLM-data-maker
@@ -36,9 +36,13 @@ python app.py
 ```
 
 ## 4. 未来规划
-- 增加api方式自动提问的功能
-- 优化大模型返回的问答数据的保存方式
-- 增加数据清洗的功能
+- [x] 增加api方式自动提问的功能
+- [x] 增加数据可视化的功能
+- [ ] 优化大模型返回的问答数据的保存方式
+- [ ] 增加数据清洗的功能
+- [ ] 增加数据标注的功能
+
+
 
 
 
