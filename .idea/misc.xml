@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.8 (transformer)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (transformer)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="self_instruct_app" project-jdk-type="Python SDK" />
   <component name="RSettings">
     <option name="interpreterPath" value="/usr/local/bin/R" />
   </component>
