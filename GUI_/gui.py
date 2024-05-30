@@ -5,76 +5,35 @@ from datetime import datetime
 from doc import json_extractor
 from doc.document_processor import DocumentProcessor
 import json
-import gui_setup
+from GUI_ import gui_setup
 import tkinter as tk
 import time
 class GUI:
     def __init__(self, master):
         self.master = master
-        master.title("大模型数据收集应用")
+        master.title("大模型数据收集应用（当前：网页对话模式）")
         # master.iconbitmap("icon.ico")  #新增app图标
-
 
         self.should_pause = False  # 暂停标志
         self.is_on_top = tk.BooleanVar(value=False)  # 是否置顶，默认为不置顶
 
         self.doc_processor = DocumentProcessor()
 
-        # 创建复选框用于控制置顶功能
-        self.topmost_checkbox = tk.Checkbutton(master, text="勾选此处\n将窗口置顶", variable=self.is_on_top, command=self.set_topmost)
-        self.topmost_checkbox.grid(row=0, column=0, padx=10, pady=2, sticky="w")
-
-        # 创建各个功能区域的 Frame
-        self.template_frame = tk.Frame(master)
-        self.template_frame.grid(row=0, column=1, padx=2, pady=2)
-
-
-
-        self.output_frame = tk.Frame(master)
-        self.output_frame.grid(row=2, column=1, padx=2, pady=2)
-
-        # 创建一个框架来包含 file_frame 和 template_selection_frame
-        self.file_template_frame = tk.Frame(master)
-        self.file_template_frame.grid(row=1, column=1, padx=2, pady=2)
-
-        # 放置 file_frame 和 template_selection_frame
-        self.file_frame = tk.Frame(self.file_template_frame)
-        self.file_frame.pack(side=tk.LEFT, padx=2, pady=2)
-
-        self.template_selection_frame = tk.Frame(self.file_template_frame)
-        self.template_selection_frame.pack(side=tk.LEFT, padx=2, pady=2)
-
-        self.status_frame = tk.Frame(master)
-        self.status_frame.grid(row=5, column=1, padx=2, pady=2)
-
-        # 创建一个框架来包含按钮
-        self.button_pause_frame = tk.Frame(master)
-        self.button_pause_frame.grid(row=4, column=1, padx=2, pady=2)
-
-        # 在框架中放置按钮
-        self.button_frame = tk.Frame(self.button_pause_frame)
-        self.button_frame.pack(side=tk.LEFT, padx=5, pady=2)
-
-        self.pause_frame = tk.Frame(self.button_pause_frame)
-        self.pause_frame.pack(side=tk.LEFT, padx=5, pady=2)
-
-
-        self.sleep_frame = tk.Frame(master)
-        self.sleep_frame.grid(row=6, column=1, padx=2, pady=2)
-
-        self.json_frame = tk.Frame(master)
-        self.json_frame.grid(row=7, column=1, padx=2, pady=2)
-
-        self.switch_button= tk.Frame(master)
-        self.switch_button.grid(row=8, column=1, padx=2, pady=2)
+        # 调用 setup_frames 函数
+        gui_setup.setup_frames(self)
 
         # 直接调用 setup_gui 函数
         gui_setup.setup_gui(self)
 
+        self.api_button = tk.Button(master, text="切换至 API 对话模式", command=self.switch_to_api,height=2, width=12)
+        self.api_button.grid(row=7, column=0, padx=2, pady=2)
 
-
-
-
+    def switch_to_api(self):
+        self.master.destroy()  # 销毁当前的GUI
+        root = tk.Tk()  # 创建一个新的Tkinter窗口
+        from GUI_.gui_api import GUI1  # 将导入语句放在函数内部
+        gui = GUI1(root)  # 创建一个新的GUI1
+        root.mainloop()  # 启动Tkinter的主循环
 
 
     def select_file(self):
@@ -119,41 +78,6 @@ class GUI:
 
         self.should_pause = False  # 设置为继续状态
 
-    # def pause_resume_process(self):
-    #     if self.should_pause:  # 如果当前处于暂停状态
-    #         self.should_pause = False  # 设置为继续状态
-    #         self.pause_button.config(text="暂停")  # 修改按钮文本为“暂停”
-    #         self.pause_status_label.config(text="")  # 清空状态信息
-    #     else:
-    #         self.should_pause = True  # 设置为暂停状态
-    #         self.pause_button.config(text="继续")  # 修改按钮文本为“继续”
-    #         timestamp = datetime.now().strftime('%Y.%m.%d-%H:%M:%S')
-    #         # 获取当前处理到的段落索引
-    #         current_index = self.doc_processor.current_paragraph
-    #         # 在文本框中插入指定信息
-    #         self.output_text.insert(tk.END,
-    #                                 f"{timestamp} 当前处理到第{current_index}段，程序已经暂停，如需继续运行，请点击（继续）按钮\n")
-    #         self.output_text.see(tk.END)  # 滚动到文本末尾
-
-    # def pause_resume_process(self):
-    #     if self.should_pause:  # 如果当前处于暂停状态
-    #         self.should_pause = False  # 设置为继续状态
-    #         self.pause_button.config(text="暂停")  # 修改按钮文本为“暂停”
-    #         self.pause_status_label.config(text="")  # 清空状态信息
-    #
-    #         # 在新线程中启动倒计时
-    #         Thread(target=self.countdown_and_resume, args=(5,)).start()  # 倒计时 5 秒并继续运行
-    #     else:
-    #         self.should_pause = True  # 设置为暂停状态
-    #         self.pause_button.config(text="继续")  # 修改按钮文本为“继续”
-    #         timestamp = datetime.now().strftime('%Y.%m.%d-%H:%M:%S')
-    #         # 获取当前处理到的段落索引
-    #         current_index = self.doc_processor.current_paragraph
-    #         # 在文本框中插入指定信息
-    #         self.output_text.insert(tk.END,
-    #                                 f"{timestamp} 当前处理到第{current_index}段，程序已经暂停，如需继续运行，请点击（继续）按钮\n")
-    #
-    #         self.output_text.see(tk.END)  # 滚动到文本末尾
 
     def pause_resume_process(self):
         if self.should_pause:  # 如果当前处于暂停状态

@@ -1,7 +1,8 @@
 import tkinter as tk
 
 
-def setup_gui(self):
+def setup_gui_api(self):
+
     # 模板内容显示区域
     self.template_content = tk.StringVar()
     self.template_text = tk.Text(self.template_frame, height=10, width=50)
@@ -15,7 +16,7 @@ def setup_gui(self):
     self.select_button.pack(side=tk.LEFT, padx=2, pady=2)
 
     # 输出文本区域
-    self.output_text = tk.Text(self.output_frame, height=10, width=50)
+    self.output_text = tk.Text(self.output_frame, height=30, width=100)
     self.output_text.pack(padx=2, pady=2)
 
     # 模板选择区域
@@ -29,30 +30,16 @@ def setup_gui(self):
                                          *template_options, command=self.update_template_text)
     self.template_option.pack(side=tk.LEFT, padx=2, pady=2)
     # 功能按钮区域
-    self.process_button = tk.Button(self.button_frame, text="点此\n开始运行",  height=3, width=10, command=self.process_text, bg="green",
-                                    fg="black")
-    self.process_button.pack(side=tk.LEFT, padx=10, pady=2)
+
 
     # 状态显示区域
     self.status_label = tk.Label(self.status_frame, text="", font=("Arial", 10))
     self.status_label.pack(padx=2, pady=2)
 
     # 暂停按钮区域
-    self.pause_button = tk.Button(self.pause_frame, text="暂停", command=self.pause_resume_process, height=3, width=10, bg="orange",
-                                  fg="black")
-    self.pause_button.pack(side=tk.LEFT, padx=10, pady=2)
 
-    # 等待时间设置区域
-    self.sleep_label = tk.Label(self.sleep_frame, text="模型回复等待时间（秒）:",font=("Arial", 10))
-    self.sleep_label.pack(side=tk.LEFT, padx=2, pady=2)
 
-    self.sleep_value = tk.IntVar(self.master)
-    self.sleep_value.set(30)  # 设置默认等待时间为20秒
-    self.sleep_entry = tk.Entry(self.sleep_frame, textvariable=self.sleep_value)
-    self.sleep_entry.pack(side=tk.LEFT, padx=2, pady=2)
 
-    self.sleep_reminder_label = tk.Label(self.sleep_frame, text="如果模型回复慢，请增加这个数字", font=("Arial", 8))
-    self.sleep_reminder_label.pack(side=tk.LEFT, padx=2, pady=2)
 
     # JSON 数据收集区域
     self.collect_json_label = tk.Label(self.json_frame, text="等收集好txt文档后，点击下面按钮，一键自动转为 JSON 问答数据", font=("Arial", 10))
@@ -61,6 +48,8 @@ def setup_gui(self):
     self.collect_json_button = tk.Button(self.json_frame, text="收集 JSON", command=self.collect_json_data,height=3, width=10, bg="blue",
                                          fg="black")
     self.collect_json_button.pack(padx=2, pady=2)
+
+
 
 
 
@@ -120,9 +109,81 @@ def setup_gui(self):
     # 创建变量用于存储当前复制粘贴的内容
     self.copy_content = tk.StringVar()
 
-def switch_gui(self):
-    self.master.destroy()  # 销毁当前的GUI
-    root = tk.Tk()  # 创建一个新的Tkinter窗口
-    # 创建一个新的GUI，这里假设你的新GUI的类名为NewGUI
-    gui = GUI1(root)
-    root.mainloop()  # 启动Tkinter的主循环
+def setup_frames_api(gui):
+    gui.topmost_checkbox = tk.Checkbutton(gui.master, text="勾选此处\n将窗口置顶", variable=gui.is_on_top, command=gui.set_topmost)
+    gui.topmost_checkbox.grid(row=0, column=0, padx=10, pady=2, sticky="w")
+
+    gui.template_frame = tk.Frame(gui.master)
+    gui.template_frame.grid(row=0, column=1, padx=2, pady=2)
+
+    gui.output_frame = tk.Frame(gui.master)
+    gui.output_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+
+    gui.file_template_frame = tk.Frame(gui.master)
+    gui.file_template_frame.grid(row=1, column=1, padx=2, pady=2)
+
+    gui.file_frame = tk.Frame(gui.file_template_frame)
+    gui.file_frame.pack(side=tk.LEFT, padx=2, pady=2)
+
+    gui.template_selection_frame = tk.Frame(gui.file_template_frame)
+    gui.template_selection_frame.pack(side=tk.LEFT, padx=2, pady=2)
+
+    gui.status_frame = tk.Frame(gui.master)
+    gui.status_frame.grid(row=5, column=1, padx=2, pady=2)
+
+
+
+    gui.sleep_frame = tk.Frame(gui.master)
+    gui.sleep_frame.grid(row=6, column=0, columnspan=2, padx=2, pady=2)
+
+    gui.json_frame = tk.Frame(gui.master)
+    gui.json_frame.grid(row=7, column=1, padx=2, pady=2)
+
+    # # 新增两个输入框
+    # gui.base_url_label = tk.Label(gui.master, text="api_url:")
+    # gui.base_url_label.grid(row=0, column=2, padx=2, pady=2)
+    # gui.base_url_entry = tk.Entry(gui.master)
+    # gui.base_url_entry.grid(row=0, column=3, padx=2, pady=2)
+    # gui.base_url_entry.insert(tk.END, gui.default_base_url)
+    #
+    # # 新增一个输入框来输入保存结果的 txt 文件的路径
+    # gui.txt_path_label = tk.Label(gui.master, text="对话记录另存地址:")
+    # gui.txt_path_label.grid(row=1, column=2, padx=2, pady=2)
+    # gui.txt_path_entry = tk.Entry(gui.master)
+    # gui.txt_path_entry.grid(row=1, column=3, padx=2, pady=2)
+    # gui.txt_path_entry.insert(tk.END, gui.default_txt_path)
+
+    # 创建一个新的 Frame 来放置这些组件
+    input_frame = tk.Frame(gui.master)
+    input_frame.grid(row=1, column=0, padx=2, pady=2)  # 将 Frame 放在第0行，第1列
+
+    # 在新的 Frame 中添加两个输入框
+    gui.base_url_label = tk.Label(input_frame, text="api_url:")
+    gui.base_url_label.grid(row=0, column=0, padx=2, pady=2)
+    gui.base_url_entry = tk.Entry(input_frame)
+    gui.base_url_entry.grid(row=0, column=1, padx=2, pady=2)
+    gui.base_url_entry.insert(tk.END, gui.default_base_url)
+
+    # 在新的 Frame 中添加一个输入框来输入保存结果的 txt 文件的路径
+    gui.txt_path_label = tk.Label(input_frame, text="对话记录另存地址:")
+    gui.txt_path_label.grid(row=1, column=0, padx=2, pady=2)
+    gui.txt_path_entry = tk.Entry(input_frame)
+    gui.txt_path_entry.grid(row=1, column=1, padx=2, pady=2)
+    gui.txt_path_entry.insert(tk.END, gui.default_txt_path)
+
+    # 创建一个新的 Frame 来放置这两个按钮
+    button_frame = tk.Frame(gui.master)
+    button_frame.grid(row=3, column=0, columnspan=2, padx=2, pady=2)  # 将 Frame 放在第3行，第1列
+
+    # 修改开始按钮的命令函数
+    gui.start_button = tk.Button(button_frame, text="API对话", command=gui.start, height=3, width=10)
+    gui.start_button.pack(side=tk.LEFT, padx=20, pady=2)  # 在 Frame 中从左到右放置按钮
+
+    # 新增一个 "停止" 按钮
+    gui.stop_button = tk.Button(button_frame, text="停止", command=gui.stop, height=3, width=10)
+    gui.stop_button.pack(side=tk.LEFT, padx=20, pady=2)  # 在 Frame 中从左到右放置按钮
+
+
+
+
+

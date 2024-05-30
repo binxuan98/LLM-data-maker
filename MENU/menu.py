@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import webbrowser
-from GUI.gui import GUI
+from GUI_.gui import GUI
 
 
 class GUIWithMenu(GUI):
@@ -19,6 +19,9 @@ class GUIWithMenu(GUI):
         self.model_menu.add_command(label="智谱清言", command=self.open_model_link_2)
         self.model_menu.add_command(label="文新一言", command=self.open_model_link_3)
         self.model_menu.add_command(label="通义千问", command=self.open_model_link_4)
+        self.model_menu.add_command(label="DeepSeek", command=self.open_model_link_5)
+
+
 
         # 创建帮助菜单
         self.help_menu = tk.Menu(self.menu_bar, tearoff=0)
@@ -66,4 +69,11 @@ class GUIWithMenu(GUI):
     def open_model_link_4(self):
         link = "https://tongyi.aliyun.com/qianwen/"
         webbrowser.open_new(link)
+
+    def open_model_link_5(self):
+        link = "https://chat.deepseek.com/"
+        webbrowser.open_new(link)
+
+
+
 
