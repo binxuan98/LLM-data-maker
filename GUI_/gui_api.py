@@ -7,6 +7,7 @@ from GUI_ import gui_api_setup
 from doc import json_extractor
 from threading import Thread
 import json
+import datetime
 
 class GUI1:
     def __init__(self, master):
@@ -19,12 +20,12 @@ class GUI1:
         self.selected_template = None
 
         # 创建一个新的按钮
-        self.switch_button = tk.Button(master, text="切换至 网页对话模式", command=self.switch_to_gui, height=2, width=12)
-        self.switch_button.grid(row=7, column=0, padx=1, pady=2)
+        self.switch_button = tk.Button(master, text="切换至 网页对话模式", command=self.switch_to_gui, height=2, width=15)
+        self.switch_button.grid(row=6, column=0, padx=1, pady=2)
 
         # 设置默认的 Base URL 和 TXT 文件路径
         self.default_base_url = "这里输入api请求地址"
-        self.default_txt_path = "这里输入最终txt文件保存地址"
+
 
         # 调用 setup_frames 函数
         gui_api_setup.setup_frames_api(self)
@@ -181,6 +182,7 @@ class GUI1:
                             self.output_text.insert(tk.END, data['text'])
                             # 滚动到文本框的末尾
                             self.output_text.see(tk.END)
+
                 else:
                     messagebox.showinfo("提示", "对话请求失败！")
 
@@ -191,7 +193,34 @@ class GUI1:
             # 启用开始按钮和停止按钮
             self.start_button.config(state="normal")
             self.stop_button.config(state="normal")
+
+
+
         else:
             messagebox.showinfo("提示", "请选择一个 Word 文档")
 
+    def collect_json_data_api(self):
+        # 从 output_text 文本框中获取所有文字
+        output_text_content = self.output_text.get("1.0", tk.END)
+
+        # 使用 extract_json_from_text 方法提取其中的 JSON 格式数据
+        json_data = json_extractor.extract_json_from_output(output_text_content)
+
+        if json_data:
+            # 获取当前日期并格式化为字符串
+            current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+            # 选择保存路径
+            save_path = filedialog.asksaveasfilename(defaultextension=".json",
+                                                     filetypes=[("JSON 文件", "*.json")],
+                                                     initialfile=f"json-{current_date}")  # 使用当前日期作为默认文件名
+            if save_path:
+                # 将 JSON 数据保存到文件中
+                with open(save_path, 'w', encoding='utf-8') as f:
+                    json.dump(json_data, f, indent=4, ensure_ascii=False)
+                messagebox.showinfo("提示", "JSON 数据提取完成并保存到文件中！")
+            else:
+                messagebox.showinfo("提示", "未选择保存路径！")
+        else:
+            messagebox.showinfo("提示", "未找到有效的 JSON 数据！")
 

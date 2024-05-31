@@ -32,3 +32,13 @@ def get_objects_from_string(s):
             pass
 
     return json_objs
+
+def extract_json_from_output(output_text_content):
+    json_data = []
+
+    # 尝试从文本中提取 JSON 数据
+    json_objs = get_objects_from_string(output_text_content)
+    if json_objs:
+        json_data.extend(json_objs)
+
+    return json_data
