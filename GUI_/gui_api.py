@@ -10,32 +10,54 @@ import json
 import datetime
 
 class GUI1:
+    # 将模板和URL定义为类变量
+    DEFAULT_BASE_URL = "这里输入api请求地址"
+    DEFAULT_MODEL = "Yi-1.5-34B-Chat"
+    
     def __init__(self, master):
+        # 初始化基本属性
+        self._init_attributes(master)
+        # 初始化UI组件
+        self._init_ui()
+
+    def _init_attributes(self, master):
+        """初始化基本属性"""
         self.master = master
-        master.title("大模型数据收集应用（当前：API 对话模式）")
-
-        self.is_on_top = tk.BooleanVar()
+        self.master.title("大模型数据收集应用（当前：API 对话模式）")
+        
+        # 使用字典存储状态变量
+        self.state = {
+            'should_stop': False,
+            'is_on_top': tk.BooleanVar(value=False)
+        }
+        
+        # 添加窗口关闭协议
+        self.master.protocol("WM_DELETE_WINDOW", self.master.destroy)
+        
         self.doc_processor = DocumentProcessor()
-
         self.selected_template = None
 
-        # 创建一个新的按钮
-        self.switch_button = tk.Button(master, text="切换至 网页对话模式", command=self.switch_to_gui, height=2, width=15)
-        self.switch_button.grid(row=6, column=0, padx=1, pady=2)
-
-        # 设置默认的 Base URL 和 TXT 文件路径
-        self.default_base_url = "这里输入api请求地址"
-
-
-        # 调用 setup_frames 函数
+    def _init_ui(self):
+        """初始化UI组件"""
+        self._create_switch_button()
         gui_api_setup.setup_frames_api(self)
-
-        # 直接调用 setup_gui 函数
         gui_api_setup.setup_gui_api(self)
+
+    def _create_switch_button(self):
+        """创建模式切换按钮"""
+        self.switch_button = tk.Button(
+            self.master,
+            text="切换至 网页对话模式",
+            command=self.switch_to_gui,
+            height=2,
+            width=15
+        )
+        self.switch_button.grid(row=6, column=0, padx=1, pady=2)
 
     def set_topmost(self):
         """根据复选框的选择设置窗口是否置顶"""
-        self.master.attributes("-topmost", self.is_on_top.get())
+        is_top = self.state['is_on_top'].get()
+        self.master.attributes("-topmost", is_top)
 
     def collect_json_data(self):
         txt_path = filedialog.askopenfilename(filetypes=[("Text 文本文件", "*.txt")])  # 选择文本文件
@@ -83,18 +105,26 @@ class GUI1:
         self.status_label.config(text=status_text)
 
     def switch_to_gui(self):
-        self.master.destroy()  # 销毁当前的 GUI1 界面
-        root = tk.Tk()  # 创建一个新的 Tkinter 窗口
-        from GUI_.gui import GUI  # 导入 GUI 类
-        gui = GUI(root)  # 创建一个新的 GUI 界面
-        root.mainloop()  # 启动 Tkinter 的主循环
+        """切换到GUI模式"""
+        # 直接销毁当前窗口
+        self.master.destroy()
+        
+        # 创建新窗口
+        root = tk.Tk()
+        from GUI_.gui import GUI
+        gui = GUI(root)
+        root.mainloop()
 
     def switch_gui(self):
-        self.master.destroy()  # 销毁当前的GUI
-        root = tk.Tk()  # 创建一个新的Tkinter窗口
-        from MENU.menu import GUIWithMenu  # 将导入语句放在函数内部
-        gui = GUIWithMenu(root)  # 创建一个新的GUIWithMenu
-        root.mainloop()  # 启动Tkinter的主循环
+        """切换到菜单模式"""
+        # 直接销毁当前窗口
+        self.master.destroy()
+        
+        # 创建新窗口
+        root = tk.Tk()
+        from MENU.menu import GUIWithMenu
+        gui = GUIWithMenu(root)
+        root.mainloop()
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Word 文档", "*.docx")])
@@ -111,7 +141,7 @@ class GUI1:
 
     def stop(self):
         # 停止从 API 获取数据
-        self.should_stop = True  # 假设你有一个名为 should_stop 的属性来控制是否应该停止从 API 获取数据
+        self.state['should_stop'] = True  # 假设你有一个名为 should_stop 的属性来控制是否应该停止从 API 获取数据
 
         # 在文本框中显示 "已经停止对话"
         self.output_text.insert(tk.END, "已经停止对话\n")
@@ -119,85 +149,126 @@ class GUI1:
 
     def start(self):
         # 创建一个新的线程来执行 start_thread 方法
-        self.should_stop = False  # 在开始新的对话之前，确保 should_stop 属性为 False
+        self.state['should_stop'] = False  # 在开始新的对话之前，确保 should_stop 属性为 False
         Thread(target=self.start_thread).start()
 
     def start_thread(self):
-        base_url = self.base_url_entry.get()
-
-        if not base_url:
-            messagebox.showinfo("提示", "请输入Base URL")
+        """优化API请求处理"""
+        if not self._validate_inputs():
             return
 
-        # 发送对话请求的基础参数
-        dialog_base_params = {
+        dialog_params = self._create_dialog_params()
+        
+        if not self.doc_processor.content:
+            messagebox.showinfo("提示", "请选择一个 Word 文档")
+            return
+
+        self._process_paragraphs(dialog_params)
+
+    def _validate_inputs(self):
+        """验证输入参数"""
+        base_url = self.base_url_entry.get()
+        if not base_url:
+            messagebox.showinfo("提示", "请输入Base URL")
+            return False
+        return True
+
+    def _create_dialog_params(self):
+        """创建对话参数"""
+        return {
             "conversation_id": "",
             "history_len": -1,
             "history": [],
-            "stream": True,  # 设置 stream 参数为 True
-            "model_name": "Yi-1.5-34B-Chat",
+            "stream": True,
+            "model_name": self.DEFAULT_MODEL,
             "temperature": 0.8,
             "max_tokens": 0,
             "prompt_name": "default"
         }
 
-        # 从 Word 文档中读取内容并逐段发送对话请求
-        if self.doc_processor.content:
-            paragraphs = self.doc_processor.content.split('\n')
+    def _process_paragraphs(self, dialog_params):
+        """处理文档段落"""
+        self.start_button.config(state="disabled")
+        paragraphs = self.doc_processor.content.split('\n')
 
-            # 禁用开始按钮
-            self.start_button.config(state="disabled")
+        for index, part in enumerate(paragraphs, 1):
+            if self.state['should_stop']:
+                break
 
-            for index, part in enumerate(paragraphs, 1):
-                # 获取当前模板内容
-                current_template = self.template_text.get("1.0", tk.END).strip()
-                if not current_template:
-                    messagebox.showinfo("提示", "请输入自定义模板！")
-                    return
+            if not self._process_single_paragraph(dialog_params, part, index):
+                break
 
-                # 为每段创建对话参数
-                dialog_params = dialog_base_params.copy()
-                dialog_params["query"] = current_template.replace("{content}", part.strip())
-                self.doc_processor.current_paragraph = index  # 更新当前处理的段落数
-                self.update_status_label()  # 更新状态标签
+        self._reset_buttons()
 
-                # 发送对话请求
-                headers = {
-                    "accept": "application/json",
-                    "Content-Type": "application/json",
-                }
-                response = requests.post(base_url, json=dialog_params, headers=headers, stream=True)
+    def _process_single_paragraph(self, dialog_params, part, index):
+        """处理单个段落"""
+        current_template = self.template_text.get("1.0", tk.END).strip()
+        if not current_template:
+            messagebox.showinfo("提示", "请输入自定义模板！")
+            return False
 
-                if response.status_code == 200:
-                    for line in response.iter_lines():
-                        # 在获取每一行数据之前，检查是否应该停止
-                        if self.should_stop:
-                            break
+        params = dialog_params.copy()
+        params["query"] = current_template.replace("{content}", part.strip())
+        
+        self._update_progress(index)
+        return self._make_api_request(params)
 
-                        if line:
-                            decoded_line = line.decode('utf-8')
-                            # 解析 JSON 数据
-                            data = json.loads(decoded_line.lstrip('data: '))
-                            # 将数据实时显示在文本框中
-                            self.output_text.insert(tk.END, data['text'])
-                            # 滚动到文本框的末尾
-                            self.output_text.see(tk.END)
+    def _make_api_request(self, params):
+        """发送API请求"""
+        try:
+            response = requests.post(
+                self.base_url_entry.get(),
+                json=params,
+                headers=self._get_headers(),
+                stream=True
+            )
 
-                else:
-                    messagebox.showinfo("提示", "对话请求失败！")
+            if response.status_code == 200:
+                return self._handle_response_stream(response)
+            else:
+                messagebox.showinfo("提示", f"对话请求失败！状态码：{response.status_code}")
+                return False
+        except Exception as e:
+            messagebox.showinfo("错误", f"请求发生错误：{str(e)}")
+            return False
 
-                # 在获取每一段数据之后，检查是否应该停止
-                if self.should_stop:
-                    break
+    def _get_headers(self):
+        """获取请求头"""
+        return {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+        }
 
-            # 启用开始按钮和停止按钮
-            self.start_button.config(state="normal")
-            self.stop_button.config(state="normal")
+    def _handle_response_stream(self, response):
+        """处理流式响应"""
+        for line in response.iter_lines():
+            if self.state['should_stop']:
+                return False
 
+            if line:
+                try:
+                    decoded_line = line.decode('utf-8')
+                    data = json.loads(decoded_line.lstrip('data: '))
+                    self._update_output(data['text'])
+                except Exception as e:
+                    print(f"处理响应时出错：{str(e)}")
+                    continue
+        return True
 
+    def _update_progress(self, index):
+        """更新进度显示"""
+        self.doc_processor.current_paragraph = index
+        self.update_status_label()
 
-        else:
-            messagebox.showinfo("提示", "请选择一个 Word 文档")
+    def _update_output(self, text):
+        """更新输出显示"""
+        self.output_text.insert(tk.END, text)
+        self.output_text.see(tk.END)
+
+    def _reset_buttons(self):
+        """重置按钮状态"""
+        self.start_button.config(state="normal")
+        self.stop_button.config(state="normal")
 
     def collect_json_data_api(self):
         # 从 output_text 文本框中获取所有文字
@@ -223,4 +294,22 @@ class GUI1:
                 messagebox.showinfo("提示", "未选择保存路径！")
         else:
             messagebox.showinfo("提示", "未找到有效的 JSON 数据！")
+
+    def _on_closing(self):
+        """处理窗口关闭事件"""
+        try:
+            # 如果正在运行API请求，先停止
+            if not self.state['should_stop']:
+                self.stop()
+            
+            # 确保清理所有资源
+            self.master.quit()
+            self.master.destroy()
+        except Exception as e:
+            print(f"关闭窗口时出错: {str(e)}")
+            # 如果出错，强制关闭
+            try:
+                self.master.destroy()
+            except:
+                pass
 

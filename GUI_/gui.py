@@ -1,5 +1,4 @@
-from tkinter import filedialog
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 from threading import Thread
 from datetime import datetime
 from doc import json_extractor
@@ -8,33 +7,74 @@ import json
 from GUI_ import gui_setup
 import tkinter as tk
 import time
+
 class GUI:
     def __init__(self, master):
+        # 初始化基本属性
+        self._init_attributes(master)
+        # 初始化UI组件
+        self._init_ui()
+
+    def _init_attributes(self, master):
+        """初始化基本属性"""
         self.master = master
-        master.title("大模型数据收集应用（当前：网页对话模式）")
-        # master.iconbitmap("icon.ico")  #新增app图标
-
-        self.should_pause = False  # 暂停标志
-        self.is_on_top = tk.BooleanVar(value=False)  # 是否置顶，默认为不置顶
-
+        self.master.title("大模型数据收集应用（当前：网页对话模式）")
+        
+        # 使用字典存储状态变量，提高访问效率
+        self.state = {
+            'should_pause': False,
+            'is_on_top': tk.BooleanVar(value=False)
+        }
+        
+        # 添加窗口关闭协议
+        self.master.protocol("WM_DELETE_WINDOW", self.master.destroy)
+        
+        # 预先创建 DocumentProcessor 实例
         self.doc_processor = DocumentProcessor()
 
-        # 调用 setup_frames 函数
-        gui_setup.setup_frames(self)
+    def _init_ui(self):
+        """初始化UI组件"""
+        # 先设置框架，再设置其他UI组件
+        self._setup_frames()
+        self._setup_gui()
+        
+        # 最后创建API按钮
+        self._create_api_button()
 
-        # 直接调用 setup_gui 函数
-        gui_setup.setup_gui(self)
-
-        self.api_button = tk.Button(master, text="切换至 API 对话模式", command=self.switch_to_api,height=2, width=12)
+    def _create_api_button(self):
+        """创建API切换按钮"""
+        self.api_button = tk.Button(
+            self.master,
+            text="切换至 API 对话模式",
+            command=self.switch_to_api,
+            height=2,
+            width=12
+        )
         self.api_button.grid(row=7, column=0, padx=2, pady=2)
 
-    def switch_to_api(self):
-        self.master.destroy()  # 销毁当前的GUI
-        root = tk.Tk()  # 创建一个新的Tkinter窗口
-        from GUI_.gui_api import GUI1  # 将导入语句放在函数内部
-        gui = GUI1(root)  # 创建一个新的GUI1
-        root.mainloop()  # 启动Tkinter的主循环
+    def _setup_frames(self):
+        """设置框架"""
+        gui_setup.setup_frames(self)
 
+    def _setup_gui(self):
+        """设置GUI组件"""
+        gui_setup.setup_gui(self)
+
+    def switch_to_api(self):
+        """切换到API模式"""
+        # 直接销毁当前窗口
+        self.master.destroy()
+        
+        # 创建新窗口
+        root = tk.Tk()
+        from GUI_.gui_api import GUI1
+        gui = GUI1(root)
+        root.mainloop()
+
+    def _on_api_window_close(self, api_window):
+        """处理API窗口关闭事件"""
+        api_window.destroy()
+        self.master.deiconify()  # 重新显示主窗口
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Word 文档", "*.docx")])
@@ -76,71 +116,66 @@ class GUI:
             self.master.update()
         # 倒计时结束后，继续运行
 
-        self.should_pause = False  # 设置为继续状态
+        self.state['should_pause'] = False  # 设置为继续状态
 
 
     def pause_resume_process(self):
-        if self.should_pause:  # 如果当前处于暂停状态
-
-            self.pause_button.config(text="暂停")  # 修改按钮文本为“暂停”
-            # self.pause_status_label.config(text="")  # 清空状态信息
-
-            # 在新线程中启动倒计时
-            Thread(target=self.countdown_after_resume, args=(5,)).start()  # 倒计时 5 秒并继续运行
-
+        if self.state['should_pause']:  # 使用state字典
+            self.pause_button.config(text="暂停")
+            Thread(target=self.countdown_after_resume, args=(5,)).start()
         else:
-            self.should_pause = True  # 设置为暂停状态
-            self.pause_button.config(text="继续")  # 修改按钮文本为“继续”
+            self.state['should_pause'] = True  # 使用state字典
+            self.pause_button.config(text="继续")
             timestamp = datetime.now().strftime('%Y.%m.%d-%H:%M:%S')
-            # 获取当前处理到的段落索引
             current_index = self.doc_processor.current_paragraph
-            # 在文本框中插入指定信息
             self.output_text.insert(tk.END,
-                                    f"{timestamp} 当前处理到第{current_index}段，程序已经暂停，如需继续运行，请点击（继续）按钮\n")
-            self.output_text.see(tk.END)  # 滚动到文本末尾
+                                  f"{timestamp} 当前处理到第{current_index}段，程序已经暂停，如需继续运行，请点击（继续）按钮\n")
+            self.output_text.see(tk.END)
 
 
 
     def process_text_thread(self):
-        if self.doc_processor.content:
-            # 获取用户输入的等待时间
-            sleep_time = self.sleep_value.get()
-
-            self.process_button.config(state="disabled")  # 禁用开始按钮
-            selected_template = self.selected_template.get()
-            if selected_template == "自定义":
-                custom_template = self.template_text.get("1.0", tk.END).strip()  # 从文本框中获取自定义模板
-                if not custom_template:
-                    messagebox.showinfo("提示", "请输入自定义模板！")
-                    return
-                template = custom_template
-            else:
-                # 获取模板选项的索引
-                template_options = ["通用", "文旅-管理角度", "文旅-游客角度", "小红书", "知乎"
-                                    ]
-                template_index = template_options.index(selected_template)
-                template = self.templates[template_index]  # 获取选定的模板
-            for index, part in enumerate(self.doc_processor.content.split('\n'), 1):
-                while self.should_pause:  # 检查是否需要暂停
-                    time.sleep(1)  # 暂停一秒
-                    continue  # 继续等待暂停解除
-
-                # 显示当前的文本内容和时间
-                timestamp = datetime.now().strftime('%Y.%m.%d-%H:%M:%S')
-                self.output_text.insert(tk.END, f"{timestamp} 第{index}段 复制成功，请勿移动鼠标⌛️\n")
-                # 滚动到文本末尾
-                self.output_text.see(tk.END)
-                # 更新界面以显示实时内容
-                self.master.update()
-
-                if part.strip():
-                    self.doc_processor.process_paragraphs(template, index, sleep_time)  # 处理每个段落
-                    self.master.after(0, self.update_status_label)  # 更新状态标签
-
-            self.master.after(0, self.show_generation_complete_message)  # 显示生成完成提示信息
-            self.process_button.config(state="normal")  # 启用开始按钮
-        else:
+        """优化文本处理线程"""
+        if not self.doc_processor.content:
             messagebox.showinfo("提示", "请选择一个 Word 文档")
+            return
+
+        self.process_button.config(state="disabled")
+        sleep_time = self.sleep_value.get()
+        template = self._get_template()
+        
+        # 使用生成器处理文档
+        for index, part in self._process_document_parts():
+            if self.state['should_pause']:
+                self._handle_pause()
+                continue
+                
+            self._update_ui_for_part(index)
+            if part.strip():
+                self.doc_processor.process_paragraphs(template, index, sleep_time)
+                self.master.after(0, self.update_status_label)
+
+        self.master.after(0, self._finish_processing)
+
+    def _process_document_parts(self):
+        """文档处理生成器"""
+        return enumerate(
+            self.doc_processor.content.split('\n'),
+            1
+        )
+
+    def _update_ui_for_part(self, index):
+        """更新UI显示"""
+        timestamp = datetime.now().strftime('%Y.%m.%d-%H:%M:%S')
+        self.output_text.insert(tk.END, 
+            f"{timestamp} 第{index}段 复制成功，请勿移动鼠标⌛️\n")
+        self.output_text.see(tk.END)
+        self.master.update_idletasks()  # 使用update_idletasks代替update
+
+    def _finish_processing(self):
+        self.master.after(0, self.show_generation_complete_message)
+        self.process_button.config(state="normal")
+
     def show_generation_complete_message(self):
         messagebox.showinfo("提示", "生成完成！")
 
@@ -188,4 +223,17 @@ class GUI:
 
     def set_topmost(self):
         """根据复选框的选择设置窗口是否置顶"""
-        self.master.attributes("-topmost", self.is_on_top.get())
+        self.master.attributes("-topmost", self.state['is_on_top'].get())
+
+    def _get_template(self):
+        """优化模板获取逻辑"""
+        selected_template = self.selected_template.get()
+        if selected_template == "自定义":
+            custom_template = self.template_text.get("1.0", tk.END).strip()
+            if not custom_template:
+                raise ValueError("请输入自定义模板！")
+            return custom_template
+            
+        template_options = ["通用", "文旅-管理角度", "文旅-游客角度", "小红书", "知乎"]
+        template_index = template_options.index(selected_template)
+        return self.templates[template_index]

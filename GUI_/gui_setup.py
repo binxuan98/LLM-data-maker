@@ -120,40 +120,50 @@ def setup_gui(self):
     # 创建变量用于存储当前复制粘贴的内容
     self.copy_content = tk.StringVar()
 
-def setup_frames(gui):
-    gui.topmost_checkbox = tk.Checkbutton(gui.master, text="勾选此处\n将窗口置顶", variable=gui.is_on_top, command=gui.set_topmost)
-    gui.topmost_checkbox.grid(row=0, column=0, padx=10, pady=2, sticky="w")
+def setup_frames(self):
+    """设置所有框架"""
+    # 创建主要框架
+    self.template_frame = tk.Frame(self.master)
+    self.template_frame.grid(row=0, column=1, padx=2, pady=2)
 
-    gui.template_frame = tk.Frame(gui.master)
-    gui.template_frame.grid(row=0, column=1, padx=2, pady=2)
+    self.file_frame = tk.Frame(self.master)
+    self.file_frame.grid(row=1, column=0, padx=2, pady=2)
 
-    gui.output_frame = tk.Frame(gui.master)
-    gui.output_frame.grid(row=2, column=1, padx=2, pady=2)
+    self.output_frame = tk.Frame(self.master)
+    self.output_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
-    gui.file_template_frame = tk.Frame(gui.master)
-    gui.file_template_frame.grid(row=1, column=1, padx=2, pady=2)
+    self.template_selection_frame = tk.Frame(self.master)
+    self.template_selection_frame.grid(row=1, column=1, padx=2, pady=2)
 
-    gui.file_frame = tk.Frame(gui.file_template_frame)
-    gui.file_frame.pack(side=tk.LEFT, padx=2, pady=2)
+    # 创建按钮和暂停框架
+    self.button_pause_frame = tk.Frame(self.master)
+    self.button_pause_frame.grid(row=4, column=1, padx=2, pady=2)
 
-    gui.template_selection_frame = tk.Frame(gui.file_template_frame)
-    gui.template_selection_frame.pack(side=tk.LEFT, padx=2, pady=2)
+    self.button_frame = tk.Frame(self.button_pause_frame)
+    self.button_frame.pack(side=tk.LEFT, padx=5, pady=2)
 
-    gui.status_frame = tk.Frame(gui.master)
-    gui.status_frame.grid(row=5, column=1, padx=2, pady=2)
+    self.pause_frame = tk.Frame(self.button_pause_frame)
+    self.pause_frame.pack(side=tk.LEFT, padx=5, pady=2)
 
-    gui.button_pause_frame = tk.Frame(gui.master)
-    gui.button_pause_frame.grid(row=4, column=1, padx=2, pady=2)
+    self.status_frame = tk.Frame(self.master)
+    self.status_frame.grid(row=5, column=1, padx=2, pady=2)
 
-    gui.button_frame = tk.Frame(gui.button_pause_frame)
-    gui.button_frame.pack(side=tk.LEFT, padx=5, pady=2)
+    self.sleep_frame = tk.Frame(self.master)
+    self.sleep_frame.grid(row=6, column=1, padx=2, pady=2)
 
-    gui.pause_frame = tk.Frame(gui.button_pause_frame)
-    gui.pause_frame.pack(side=tk.LEFT, padx=5, pady=2)
+    self.json_frame = tk.Frame(self.master)
+    self.json_frame.grid(row=7, column=1, padx=2, pady=2)
 
-    gui.sleep_frame = tk.Frame(gui.master)
-    gui.sleep_frame.grid(row=6, column=1, padx=2, pady=2)
+    # 创建置顶复选框框架
+    self.topmost_frame = tk.Frame(self.master)
+    self.topmost_frame.grid(row=0, column=0, padx=10, pady=2, sticky="w")
 
-    gui.json_frame = tk.Frame(gui.master)
-    gui.json_frame.grid(row=7, column=1, padx=2, pady=2)
+    # 创建置顶复选框
+    self.topmost_checkbox = tk.Checkbutton(
+        self.topmost_frame, 
+        text="勾选此处\n将窗口置顶",
+        variable=self.state['is_on_top'],
+        command=self.set_topmost
+    )
+    self.topmost_checkbox.pack()
 

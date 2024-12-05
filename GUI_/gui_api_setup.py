@@ -109,62 +109,64 @@ def setup_gui_api(self):
     # 创建变量用于存储当前复制粘贴的内容
     self.copy_content = tk.StringVar()
 
-def setup_frames_api(gui):
-    gui.topmost_checkbox = tk.Checkbutton(gui.master, text="勾选此处\n将窗口置顶", variable=gui.is_on_top, command=gui.set_topmost)
-    gui.topmost_checkbox.grid(row=0, column=0, padx=10, pady=2, sticky="w")
+def setup_frames_api(self):
+    """设置所有框架"""
+    # 创建置顶复选框
+    self.topmost_checkbox = tk.Checkbutton(
+        self.master, 
+        text="勾选此处\n将窗口置顶", 
+        variable=self.state['is_on_top'],  # 使用 state 字典中的变量
+        command=self.set_topmost
+    )
+    self.topmost_checkbox.grid(row=0, column=0, padx=10, pady=2, sticky="w")
 
-    gui.template_frame = tk.Frame(gui.master)
-    gui.template_frame.grid(row=0, column=1, padx=2, pady=2)
+    # 创建主要框架
+    self.template_frame = tk.Frame(self.master)
+    self.template_frame.grid(row=0, column=1, padx=2, pady=2)
 
-    gui.output_frame = tk.Frame(gui.master)
-    gui.output_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    self.output_frame = tk.Frame(self.master)
+    self.output_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
-    gui.file_template_frame = tk.Frame(gui.master)
-    gui.file_template_frame.grid(row=1, column=1, padx=2, pady=2)
+    self.file_template_frame = tk.Frame(self.master)
+    self.file_template_frame.grid(row=1, column=1, padx=2, pady=2)
 
-    gui.file_frame = tk.Frame(gui.file_template_frame)
-    gui.file_frame.pack(side=tk.LEFT, padx=2, pady=2)
+    self.file_frame = tk.Frame(self.file_template_frame)
+    self.file_frame.pack(side=tk.LEFT, padx=2, pady=2)
 
-    gui.template_selection_frame = tk.Frame(gui.file_template_frame)
-    gui.template_selection_frame.pack(side=tk.LEFT, padx=2, pady=2)
+    self.template_selection_frame = tk.Frame(self.file_template_frame)
+    self.template_selection_frame.pack(side=tk.LEFT, padx=2, pady=2)
 
-    gui.status_frame = tk.Frame(gui.master)
-    gui.status_frame.grid(row=4, column=1, padx=2, pady=2)
+    self.status_frame = tk.Frame(self.master)
+    self.status_frame.grid(row=4, column=1, padx=2, pady=2)
 
+    self.sleep_frame = tk.Frame(self.master)
+    self.sleep_frame.grid(row=5, column=0, columnspan=2, padx=2, pady=2)
 
-
-    gui.sleep_frame = tk.Frame(gui.master)
-    gui.sleep_frame.grid(row=5, column=0, columnspan=2, padx=2, pady=2)
-
-    gui.json_frame = tk.Frame(gui.master)
-    gui.json_frame.grid(row=6, column=1, padx=2, pady=2)
-
-
+    self.json_frame = tk.Frame(self.master)
+    self.json_frame.grid(row=6, column=1, padx=2, pady=2)
 
     # 创建一个新的 Frame 来放置这些组件
-    input_frame = tk.Frame(gui.master)
-    input_frame.grid(row=1, column=0, padx=2, pady=2)  # 将 Frame 放在第0行，第1列
+    input_frame = tk.Frame(self.master)
+    input_frame.grid(row=1, column=0, padx=2, pady=2)
 
     # 在新的 Frame 中添加两个输入框
-    gui.base_url_label = tk.Label(input_frame, text="api_url:")
-    gui.base_url_label.grid(row=0, column=0, padx=2, pady=2)
-    gui.base_url_entry = tk.Entry(input_frame)
-    gui.base_url_entry.grid(row=0, column=1, padx=2, pady=2)
-    gui.base_url_entry.insert(tk.END, gui.default_base_url)
-
-
+    self.base_url_label = tk.Label(input_frame, text="api_url:")
+    self.base_url_label.grid(row=0, column=0, padx=2, pady=2)
+    self.base_url_entry = tk.Entry(input_frame)
+    self.base_url_entry.grid(row=0, column=1, padx=2, pady=2)
+    self.base_url_entry.insert(tk.END, self.DEFAULT_BASE_URL)
 
     # 创建一个新的 Frame 来放置这两个按钮
-    button_frame = tk.Frame(gui.master)
-    button_frame.grid(row=3, column=0, columnspan=2, padx=2, pady=2)  # 将 Frame 放在第3行，第1列
+    button_frame = tk.Frame(self.master)
+    button_frame.grid(row=3, column=0, columnspan=2, padx=2, pady=2)
 
     # 修改开始按钮的命令函数
-    gui.start_button = tk.Button(button_frame, text="API对话", command=gui.start, height=3, width=10)
-    gui.start_button.pack(side=tk.LEFT, padx=20, pady=2)  # 在 Frame 中从左到右放置按钮
+    self.start_button = tk.Button(button_frame, text="API对话", command=self.start, height=3, width=10)
+    self.start_button.pack(side=tk.LEFT, padx=20, pady=2)
 
     # 新增一个 "停止" 按钮
-    gui.stop_button = tk.Button(button_frame, text="停止", command=gui.stop, height=3, width=10)
-    gui.stop_button.pack(side=tk.LEFT, padx=20, pady=2)  # 在 Frame 中从左到右放置按钮
+    self.stop_button = tk.Button(button_frame, text="停止", command=self.stop, height=3, width=10)
+    self.stop_button.pack(side=tk.LEFT, padx=20, pady=2)
 
 
 
