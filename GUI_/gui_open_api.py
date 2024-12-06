@@ -13,7 +13,7 @@ client = OpenAI(
     api_key="sk-EKXvYp3G9cZGnJfQSU7RfCLEsgufsez2qfpkOWFA6o2RhFqe",
     base_url="https://api.chatanywhere.tech"
 )
-# 优化
+
 class GUI1:
     def __init__(self, master):
         self.master = master

@@ -7,7 +7,7 @@ import json
 from GUI_ import gui_setup
 import tkinter as tk
 import time
-# 优化
+
 class GUI:
     def __init__(self, master):
         # 初始化基本属性

@@ -8,7 +8,7 @@ from doc import json_extractor
 from threading import Thread
 import json
 import datetime
-# 优化
+
 class GUI1:
     # 将模板和URL定义为类变量
     DEFAULT_BASE_URL = "这里输入api请求地址"
