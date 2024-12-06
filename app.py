@@ -3,7 +3,7 @@ from MENU.menu import GUIWithMenu
 import sys
 import platform
 import time
-# youhua
+# youhua1
 def optimize_gui_performance():
     # 根据不同操作系统进行优化
     if platform.system() == 'Windows':
