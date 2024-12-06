@@ -1,6 +1,6 @@
 import tkinter as tk
 
-
+# 优化
 def setup_gui_api(self):
 
     # 模板内容显示区域
